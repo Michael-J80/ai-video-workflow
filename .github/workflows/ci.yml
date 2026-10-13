@@ -1,0 +1,22 @@
+name: Windows checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.lock.txt
+      - name: Install fixture browser
+        run: python -m playwright install chromium --only-shell
+      - name: Install FFmpeg for local fixture tests
+        run: choco install ffmpeg -y --no-progress
+      - name: Check dependency compatibility
+        run: python -m pip check
+      - name: Tests (no accounts, no paid generation)
+        run: python -m pytest tests -q

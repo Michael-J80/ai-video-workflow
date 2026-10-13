@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+data/
+config.local.json
+browser.local.json
+dist/
+*.egg-info/
+.venv-whisper/

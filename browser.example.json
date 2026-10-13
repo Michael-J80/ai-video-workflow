@@ -1,0 +1,55 @@
+{
+  "url": "https://jimeng.jianying.com/ai-tool/video/generate",
+  "timeout_ms": 10000,
+  "controls": {
+    "model": {
+      "read": "",
+      "trigger": "",
+      "option": ""
+    },
+    "mode": {
+      "read": "",
+      "trigger": "",
+      "option": ""
+    },
+    "resolution": {
+      "read": "",
+      "trigger": "",
+      "option": ""
+    },
+    "duration_seconds": {
+      "read": "",
+      "trigger": "",
+      "option": ""
+    },
+    "ratio": {
+      "read": "",
+      "trigger": "",
+      "option": ""
+    },
+    "count": {
+      "read": "",
+      "trigger": "",
+      "option": ""
+    }
+  },
+  "upload": "input[type=\"file\"]",
+  "reference_items": "",
+  "reference_name_attribute": "title",
+  "reference_count": "",
+  "prompt": "[contenteditable=\"true\"]",
+  "credits": "",
+  "balance": "",
+  "collapse": "",
+  "cards": "",
+  "card_id_attribute": "",
+  "card_prompt": "",
+  "card_status": "",
+  "download": "",
+  "success_labels": [
+    "完成",
+    "生成成功"
+  ],
+  "note": "初始适配模板，必须基于实际登录页核实唯一选择器。空字段会阻止准备和提交，不代表官网已适配。",
+  "channel": "chrome"
+}

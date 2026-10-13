@@ -1,0 +1,8 @@
+{
+  "requirements": "一个原创蓝色圆形在浅色背景中平滑从左移动到右，结尾停住，无文字无人物。",
+  "duration_seconds": 5,
+  "ratio": "1:1",
+  "require_audio": false,
+  "skip_speech": true,
+  "device": "cpu"
+}

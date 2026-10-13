@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "is_template": true,
+  "task_id": "replace-task-id",
+  "version": "v1",
+  "kind": "generated",
+  "output_root": "",
+  "materials": [],
+  "generation": {
+    "model": "Seedance 2.5",
+    "mode": "样片模式",
+    "resolution": "480P",
+    "count": 1,
+    "duration_seconds": null,
+    "ratio": "",
+    "automatic_retry": false,
+    "automatic_upscale": false
+  },
+  "desired_generation": {
+    "resolution": ""
+  },
+  "expected": {
+    "duration_seconds": null,
+    "ratio": "",
+    "require_audio": true
+  },
+  "shots": [],
+  "review_criteria": [],
+  "prompt_file": "",
+  "submission_record": ""
+}

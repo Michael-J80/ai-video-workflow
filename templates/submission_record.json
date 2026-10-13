@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "is_template": true,
+  "status": "NOT_SUBMITTED",
+  "intent_id": null,
+  "attempted": false,
+  "quote_credits": "UNKNOWN",
+  "credits_charged": "UNKNOWN",
+  "balance_before": "UNKNOWN",
+  "balance_after": "UNKNOWN",
+  "before_ids": [],
+  "provider_task_id": null,
+  "submit_action": ""
+}

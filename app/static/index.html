@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 视频工作流 · Alpha</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1 class="brand">AI 视频工作流 <span class="badge-alpha">Alpha</span></h1>
+    <div class="topbar-actions">
+      <button id="btn-refresh" class="btn btn-ghost" type="button">刷新列表</button>
+      <button id="btn-health" class="btn btn-ghost" type="button">环境检测</button>
+      <button id="btn-browser-login" class="btn btn-ghost" type="button">打开专用浏览器</button>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="notice notice-warn" role="note">
+    <strong>实验性功能提示：</strong>当前为实验版，真实官网适配尚未验证。请先配置网页适配，再核对实际报价；不会自动升级高清。
+  </section>
+
+  <section id="help-panel" class="card help-panel" aria-labelledby="help-title">
+    <h2 id="help-title" class="card-title">首次使用指引</h2>
+    <ol class="help-list">
+      <li>完成 Codex 登录。</li>
+      <li>完成 hermes 初始化配置。</li>
+      <li>打开专用浏览器并登录所需网站。</li>
+      <li>环境检测确认 ffmpeg / ffprobe / browser 可用。</li>
+    </ol>
+    <button id="btn-help-dismiss" class="btn btn-ghost" type="button">已知晓，隐藏</button>
+  </section>
+
+  <section class="card" aria-labelledby="health-title">
+    <h2 id="health-title" class="card-title">环境状态</h2>
+    <ul id="health-list" class="health-list" aria-live="polite"></ul>
+  </section>
+
+  <div class="columns">
+    <section class="card" aria-labelledby="create-title">
+      <h2 id="create-title" class="card-title">新建任务</h2>
+      <p class="empty-hint">默认 Seedance 2.5 样片模式 · 480P · 1 条</p>
+      <form id="create-form" class="form" novalidate>
+        <div class="field">
+          <label for="f-requirements">需求描述</label>
+          <textarea id="f-requirements" name="requirements" rows="4" required></textarea>
+        </div>
+        <div class="field">
+          <label for="f-duration">时长（秒）</label>
+          <input id="f-duration" name="duration_seconds" type="number" min="3" max="30" step="1" value="15" required>
+        </div>
+        <div class="field">
+          <label for="f-ratio">画面比例</label>
+          <select id="f-ratio" name="ratio">
+            <option value="16:9">16:9</option>
+            <option value="9:16" selected>9:16</option>
+            <option value="1:1">1:1</option>
+            <option value="4:3">4:3</option>
+          </select>
+        </div>
+        <div class="field field-inline">
+          <input id="f-require-audio" name="require_audio" type="checkbox" checked>
+          <label for="f-require-audio">需要音频</label>
+        </div>
+        <div class="field">
+          <label for="f-device">运行设备</label>
+          <select id="f-device" name="device">
+            <option value="cuda">cuda</option>
+            <option value="cpu">cpu</option>
+          </select>
+        </div>
+        <div class="field field-inline">
+          <input id="f-skip-speech" name="skip_speech" type="checkbox">
+          <label for="f-skip-speech">跳过语音</label>
+        </div>
+        <div class="field field-inline">
+          <input id="f-override" name="override" type="checkbox">
+          <label for="f-override">高级：自定义生成参数覆盖默认样片</label>
+        </div>
+        <fieldset id="override-fields" class="override-fields" hidden>
+          <legend>自定义生成参数</legend>
+          <div class="field">
+            <label for="f-model">模型</label>
+            <input id="f-model" name="model" type="text">
+          </div>
+          <div class="field">
+            <label for="f-mode">模式</label>
+            <input id="f-mode" name="mode" type="text">
+          </div>
+          <div class="field">
+            <label for="f-resolution">分辨率</label>
+            <input id="f-resolution" name="resolution" type="text">
+          </div>
+          <div class="field">
+            <label for="f-count">数量（固定为 1）</label>
+            <input id="f-count" name="count" type="number" value="1" readonly>
+          </div>
+          <div class="field">
+            <label for="f-override-source">用户明确覆盖依据</label>
+            <input id="f-override-source" name="override_source" type="text">
+          </div>
+        </fieldset>
+        <button type="submit" class="btn btn-primary">创建任务</button>
+      </form>
+      <p id="create-error" class="error-text" role="alert"></p>
+    </section>
+
+    <section class="card" aria-labelledby="list-title">
+      <h2 id="list-title" class="card-title">任务列表</h2>
+      <ul id="task-list" class="task-list" aria-live="polite"></ul>
+      <p id="list-error" class="error-text" role="alert"></p>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="detail-title">
+    <h2 id="detail-title" class="card-title">任务详情</h2>
+    <p id="detail-empty" class="empty-hint">请从列表中选择一个任务。</p>
+    <div id="detail-panel" hidden>
+      <dl class="detail-grid" id="detail-meta"></dl>
+
+      <div class="detail-section">
+        <h3>材料上传</h3>
+        <div class="field">
+          <label for="f-materials">选择文件（可多选，顺序可调整）</label>
+          <input id="f-materials" type="file" multiple>
+        </div>
+        <ul id="material-queue" class="material-queue"></ul>
+        <button id="btn-upload-materials" class="btn" type="button">上传材料</button>
+        <p id="materials-error" class="error-text" role="alert"></p>
+        <p id="materials-success" class="success-text" role="status"></p>
+      </div>
+
+      <div class="detail-section">
+        <h3>流程操作</h3>
+        <div class="action-row">
+          <button id="btn-start" class="btn btn-primary" type="button">开始设计与准备</button>
+          <button id="btn-prepare" class="btn" type="button">准备报价</button>
+          <button id="btn-pause" class="btn" type="button">暂停</button>
+          <button id="btn-resume" class="btn" type="button">恢复</button>
+        </div>
+        <p id="action-error" class="error-text" role="alert"></p>
+      </div>
+
+      <div class="detail-section">
+        <h3>设计方案</h3>
+        <div class="field">
+          <label for="f-design-prompt">计划提示词（可编辑）</label>
+          <textarea id="f-design-prompt" rows="5"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-design-design">设计说明</label>
+          <textarea id="f-design-design" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-design-shots">分镜 JSON</label>
+          <textarea id="f-design-shots" rows="6"></textarea>
+        </div>
+        <button id="btn-save-design" class="btn" type="button">保存设计（会使报价失效）</button>
+        <p id="design-error" class="error-text" role="alert"></p>
+        <p id="design-success" class="success-text" role="status"></p>
+      </div>
+
+      <div class="detail-section">
+        <h3>报价</h3>
+        <div id="quote-box" class="quote-box">
+          <p id="quote-empty" class="empty-hint">暂无报价。</p>
+          <dl id="quote-meta" class="detail-grid" hidden></dl>
+          <button id="btn-approve" class="btn btn-primary" type="button" hidden>确认报价并继续</button>
+        </div>
+        <p id="quote-error" class="error-text" role="alert"></p>
+      </div>
+
+      <div class="detail-section">
+        <h3>产物与状态</h3>
+        <dl id="detail-status" class="detail-grid"></dl>
+        <ul id="artifact-list" class="artifact-list"></ul>
+      </div>
+
+      <p id="detail-error" class="error-text" role="alert"></p>
+    </div>
+  </section>
+</main>
+
+<script src="/static/app.js" defer></script>
+</body>
+</html>
