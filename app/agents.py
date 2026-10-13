@@ -331,5 +331,3 @@ class HermesPlanner:
             return self._parse_actions(out.decode('utf-8', errors='replace'))
         finally:
             await stop_process(proc)
-
-
